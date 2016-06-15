@@ -20,7 +20,7 @@ $(document).ready(function() {
 		$('#overlay').toggle();	
 	});
 	$('#saveDash').click(function(){
-		$(this).css({"background-color":"#647997"})
+		$(this).css({"background-color":"#647997", "cursor":"default"})
 		var dashboardData = {test:[]};
 		_.each($('#dashboard').children(), function(report){
 			var reportData = {};
@@ -31,16 +31,18 @@ $(document).ready(function() {
 		});
 		Mixpanels.people_set(dashboardData, 'dashboardprofile')
 	});
-	$('#createSeg').click(function(){
-		$('#segBuilder').toggle();
-		MP.api.topEvents().done(function(data){
-			if ($('#eventOptions option').size() == 1){
-				_.each(data.values(), function(eventName, key){
-					$('<option>'+eventName+'</option>').appendTo('#eventOptions');
-				});
-			}
-		});
-	});
+	$('.modalElement').click(function(){
+		if ($(this).find(".modalDisplay").attr('id') == 'createSeg'){
+			$('#segBuilder').toggle();
+			MP.api.topEvents().done(function(data){
+				if ($('#eventOptions option').size() == 1){
+					_.each(data.values(), function(eventName, key){
+						$('<option>'+eventName+'</option>').appendTo('#eventOptions');
+					});
+				}
+			});
+		}
+	})
 	$('#eventOptions').change(function(){
 		var eventName = $( "#eventOptions option:selected" ).text()
 		if ($(".propSelector").css("display") == "none") {
@@ -54,13 +56,18 @@ $(document).ready(function() {
 		});
 	});
 	$('.toggle').click(function(){
-		$('.toggleBox-selected').addClass('toggleBox').removeClass('toggleBox-selected');
+		if ($(this).attr('class').indexOf('chartType') > 0){
+			$('.toggleBox-selected.chartType').addClass('toggleBox').removeClass('toggleBox-selected');
+		} else if ($(this).attr('class').indexOf('queryType') > 0){
+			$('.toggleBox-selected.queryType').addClass('toggleBox').removeClass('toggleBox-selected');
+		}
 		$(this).removeClass('toggleBox').addClass('toggleBox-selected');
 	});
 	$('#runQuery').click(function(){
+		var params = {'type':$('.toggleBox-selected.queryType').attr('value')};
 		var eventName = $( "#eventOptions option:selected" ).text();
 		var reportName = $('.textField').val();
-		var chartType = $('.toggleBox-selected').text().toLowerCase();
+		var chartType = $('.toggleBox-selected.chartType').text().toLowerCase();
 		if (chartType == "bar"){
 			chartType = "column";
 		}
@@ -69,7 +76,7 @@ $(document).ready(function() {
 		} else {
 			var propName = false;
 		}
-		segmentQueryBuild(chartType, reportName, eventName, propName);
+		segmentQueryBuild(chartType, reportName, eventName, propName, params);
 		$('#modal').toggle();
 		$('#overlay').toggle();
 		$('.propSelector').toggle();
@@ -77,7 +84,7 @@ $(document).ready(function() {
 		$('#eventOptions').prop('selectedIndex',0);
 		$('#propOptions').prop('selectedIndex',0);
 		$('.textField').val('');
-		$('#saveDash').css({"background-color":"#3f516b"})
+		$('#saveDash').css({"background-color":"#3f516b", "cursor":"pointer"})
 	})
 });
 
@@ -109,7 +116,7 @@ function Chart(name, data, chartType, reportParams, title){
 	$('<div class="delete"><img class="deleteImage" src="images/delete.png"/></div>').appendTo('#'+containerID);
 	$('.delete').click(function(){
 		$(this).parent().remove()
-		$('#saveDash').css({"background-color":"#3f516b"})
+		$('#saveDash').css({"background-color":"#3f516b", "cursor":"pointer"})
 	});
 	drawChart(xAxis, series, name, chartType, graphID, containerID, title);
 }
@@ -137,7 +144,7 @@ function loadChart(graphData){
 	$('<div class="delete"><img class="deleteImage" src="images/delete.png"/></div>').appendTo('#'+containerID);
 	$('.delete').click(function(){
 		$(this).parent().remove()
-		$('#saveDash').css({"background-color":"#3f516b"})
+		$('#saveDash').css({"background-color":"#3f516b", "cursor":"pointer"})
 	});
 	Mixpanels.segment(eventName, propName, selector).done(function(data){
 		results = processChartData(chartType, data, title)
@@ -199,7 +206,7 @@ function drawChart(xAxis, series, name, chartType, graphID, containerID){
 				})
 	$("#" + containerID).draggable({
 		start: function() {
-			$('#saveDash').css({"background-color":"#3f516b"})
+			$('#saveDash').css({"background-color":"#3f516b", "cursor":"pointer"})
 		},
 		snap: true,
 		containment: "#dashboard",
@@ -214,7 +221,7 @@ function drawChart(xAxis, series, name, chartType, graphID, containerID){
 			this.offsetHeight,
 			false
 			);
-			$('#saveDash').css({"background-color":"#3f516b"})
+			$('#saveDash').css({"background-color":"#3f516b", "cursor":"pointer"})
 		},
 	});
 }

@@ -47,7 +47,8 @@ function segmentation_url_params(event, property, params) {
     _.each(params, function(value, key){
       url_params = url_params + "&" + String(key) + "=" + String(value)
     })
-  } else {
+  } 
+  if (url_params.indexOf('&to_date') < 0 || url_params.indexOf('&from_date') < 0){
     var to_date = moment().format('YYYY-MM-DD')
     var from_date = moment().subtract(7, 'days').format('YYYY-MM-DD')
     url_params = url_params + "&to_date=" + to_date + "&from_date=" + from_date

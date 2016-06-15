@@ -37,7 +37,7 @@ body {
 #modal{
 	position: fixed;
     width: 500px;
-    height: 330px;
+    height: 355px;
     background-color: #eff1f6;
     border-radius: 25px;
     border: 1px solid black;
@@ -54,7 +54,6 @@ body {
     width: 106px;
 }
 #saveDash {
-	cursor: pointer;
     top: 47px;
     left: 531px;
     width: 106px;
@@ -74,15 +73,13 @@ body {
     height: 23px;
     border-radius: 5px;
 }
-.delete {
-	z-index: 30;
-}
 .deleteImage {
 	z-index: 10;
     height: 15px;
     position: absolute;
     top: 2%;
-    left: 95%;
+    left: 100%;
+    margin-left: -20px;
     cursor: pointer;
 }
 .modalImage {
@@ -95,6 +92,7 @@ body {
 }
 .modalElement {
 	float:left;
+	cursor:pointer;
 }
 .modalDisplay {
 	position: relative;
@@ -132,6 +130,7 @@ body {
     top: 120px;
     left: 33px;
 }
+
 .toggleBox {
 	background-color: #f6f7f9;
     height: 20px;
@@ -159,8 +158,10 @@ body {
     float: left;
     display: block;
     top: 87px;
-    left: -185px;
+    left: -188px;
     cursor: pointer;
+    margin-bottom: 6px;
+    margin-left: 3px;
 }
 .styled-select select{
    	background-color: #f6f7f9;
@@ -213,9 +214,9 @@ body {
 	display:none;
 }
 #runQuery {
-	position: absolute;
-    top: 117px;
-    left: 275px;
+	position: relative;
+    top: 92px;
+    left: 146px;
 	font-family: proxima-nova,sans-serif;
     display: inline-block;
     padding: 9px 15px;
@@ -242,6 +243,6 @@ body {
 	position: relative;
     float: left;
     left: 137px;
-    top: 86px;
+    top: 97px;
     height: 24px;
 }

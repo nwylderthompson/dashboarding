@@ -55,9 +55,13 @@
              <select id="propOptions">
                 <option selected="selected" value="placeholder">Properties</option>
              </select>
-          <div>
-            <div class="toggle toggleBox-selected" id="line">Line</div>
-            <div class="toggle toggleBox" id= "bar">Bar</div>
+          <div class="toggleSelector">
+            <div class="toggle toggleBox-selected chartType" id="line">Line</div>
+            <div class="toggle toggleBox chartType" id= "bar">Bar</div>
+          </div>
+          <div class="toggleSelector">
+            <div class="toggle toggleBox-selected queryType" value="general">Total</div>
+            <div class="toggle toggleBox queryType" value="unique">Unique</div>
           </div>
           <input type="text" name="textfield" class="textField" placeholder="Report name" /><div id="runQuery">SHOW</div>
           </div>
@@ -65,6 +69,6 @@
       </div>
       <div id="dashboard"></div>
     </div>
+    <div id="overlay"></div>
   </body>
-  <div id="overlay"></div>
 </html>

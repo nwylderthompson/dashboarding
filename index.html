@@ -2,14 +2,69 @@
 <html>
   <head>
     <meta charset="utf-8">
-    <link rel="stylesheet" type="text/css" href="https://cdn.mxpnl.com/libs/mixpanel-platform/css/reset.css">
-    <link rel="stylesheet" type="text/css" href="https://cdn.mxpnl.com/libs/mixpanel-platform/build/mixpanel-platform.v0.latest.min.css">
     <script src="https://cdn.mxpnl.com/libs/mixpanel-platform/build/mixpanel-platform.v0.latest.min.js"></script>
+    <link rel="stylesheet" href="jquery/jquery-ui.min.css">
+    <link rel="stylesheet" href="index.css">
+    <script src="jquery/external/jquery/jquery.js"></script>
+    <script src="jquery/jquery-ui.min.js"></script>
+    <script src="underscore-min.js"></script>
+    <script src="moment.min.js"></script>
+    <script src="http://code.highcharts.com/highcharts.js"></script>
+    <script src="mp_lib.js"></script>
+    <script src="index.js"></script>
+    <title>Mixpanel Dashboard</title>
   </head>
-  <body class="mixpanel-platform-body">
-    <h1>Hello, World!</h1>
-    <script>
-      // Run queries and display results here
-    </script>
+  <body>
+    <div id="reportBody">
+      <div class="display" id="title">
+        <div class="displayText" id="titletext">Mixpanel Dashboard</div>
+      </div>
+      <div class="display" id="addReport">
+        <div class="displayText" id="addReportText">Add Report</div>
+      </div>
+      <div class="display" id="saveDash">
+        <div class="displayText" id="saveDashText">Save</div>
+      </div>
+      <div id="modal">
+        <div class="modalElement">
+          <img class="modalImage" id="lineImage" src="images/chart.png"/>
+          <div class="modalDisplay" id="createSeg">
+            <div class="displayText">Segmentation</div>
+          </div>
+        </div>
+        <div class="modalElement">
+          <img class="modalImage" id="funnelImage" src="images/funnel.png"/>
+          <div class="modalDisplay" id="createFun">
+            <div class="displayText" >Funnels</div>
+          </div>
+        </div>
+        <div class="modalElement">
+          <img class="modalImage" id="retentionImage" src="images/retention.png"/>
+          <div class="modalDisplay" id="createRet">
+            <div class="displayText">Retention</div>
+          </div>
+        </div>
+        <div class="modalBuilder" id="segBuilder">
+          <div class="styled-select eventSelector">
+             <select id="eventOptions">
+                <option selected="selected">Event</option>
+             </select>
+          </div>
+          <div class="styled-select propSelector">
+          <div id="by"><div id="byText">BY</div></div>
+             <select id="propOptions">
+                <option selected="selected" value="placeholder">Properties</option>
+             </select>
+          <div>
+            <div class="toggle toggleBox-selected" id="line">Line</div>
+            <div class="toggle toggleBox" id= "bar">Bar</div>
+          </div>
+          <input type="text" name="textfield" class="textField" placeholder="Report name" /><div id="runQuery">SHOW</div>
+          </div>
+        </div>
+      </div>
+      <div id="dashboard"></div>
+    </div>
   </body>
+  <div id="overlay"></div>
 </html>

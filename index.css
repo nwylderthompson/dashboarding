@@ -1,0 +1,247 @@
+body {
+	background-color: #647997;
+}
+.container {
+    position:absolute;
+    height:310px;
+    width:456.5px;
+}
+.graph {
+	position:relative;
+	height:100%;
+	width:100%;
+	border:1px solid #647997;
+}
+#dashboard {
+	position:relative;
+	margin:auto;
+	top:100px;
+	width:915px; 
+	height:1000px; 
+	background-color: #eff1f6;
+	border:1px solid #647997;
+}
+#reportBody {
+	position:relative;
+	margin:auto;
+	width:950px;
+	height:1120px;
+	background-color:#d9dfe9;
+	border-radius: 25px; 
+	border:1px solid black;
+}
+#title {
+    top: 17px;
+    left: 15px;
+}
+#modal{
+	position: fixed;
+    width: 500px;
+    height: 330px;
+    background-color: #eff1f6;
+    border-radius: 25px;
+    border: 1px solid black;
+    top: 80px;
+    left:50%;
+    z-index: 100;
+    display:none;
+    margin-left: -250px;
+}
+#addReport {
+	cursor:pointer;
+	top: 18px;
+    left: 637px;
+    width: 106px;
+}
+#saveDash {
+	cursor: pointer;
+    top: 47px;
+    left: 531px;
+    width: 106px;
+    background-color: #647997;
+}
+.displayText {
+	color: white;
+    position: relative;
+    font-family: Tahoma;
+    text-align: center;
+}
+.display {
+	position: relative;
+    float: left;
+    background-color: #3f516b;
+    width: 167px;
+    height: 23px;
+    border-radius: 5px;
+}
+.delete {
+	z-index: 30;
+}
+.deleteImage {
+	z-index: 10;
+    height: 15px;
+    position: absolute;
+    top: 2%;
+    left: 95%;
+    cursor: pointer;
+}
+.modalImage {
+	top: 31px;
+    position: relative;
+    height: 81px;
+    margin: auto;
+    display: block;
+    width: 120px;
+}
+.modalElement {
+	float:left;
+}
+.modalDisplay {
+	position: relative;
+    float: left;
+    background-color: #3f516b;
+    width: 115px;
+    height: 22px;
+    border-radius: 5px;
+    margin: 25px;
+    top: 19px;
+    cursor:pointer;
+}
+.modalBuilder {
+	float: left;
+    top: 0px;
+    left: 6px;
+    position: relative;
+    width: 500px;
+    height: 200px;
+}
+#overlay {
+       background-color: #3c4c63 ;
+       height: 100%;
+       left: 0;
+       opacity: .8;
+       position: fixed;
+       top: 0;
+       width: 100%;
+       z-index: 10;
+       display:none;
+}
+.eventSelector {
+	position: relative;
+    float: left;
+    top: 120px;
+    left: 33px;
+}
+.toggleBox {
+	background-color: #f6f7f9;
+    height: 20px;
+    width: 50px;
+    border: 1px solid #647997;
+    border-radius: 5px;
+    text-align: center;
+    font-size: 14px;
+    font-family: Tahoma;
+    color: #747d94;
+}
+.toggleBox-selected {
+	background-color: #647997;
+    height: 20px;
+    width: 50px;
+    border: 1px solid #647997;
+    border-radius: 5px;
+    text-align: center;
+    font-size: 14px;
+    font-family: Tahoma;
+    color: #eff1f6;
+}
+.toggle{
+	position: relative;
+    float: left;
+    display: block;
+    top: 87px;
+    left: -185px;
+    cursor: pointer;
+}
+.styled-select select{
+   	background-color: #f6f7f9;
+   	color:#747d94;
+    width: 175px;
+    padding: 5px;
+    font-size: 14px;
+    line-height: 1;
+    height: 34px;
+    -webkit-appearance: none;
+    border: 1px solid #647997;
+    border-radius: 5px;
+    text-align: center;
+    float:left;
+    font-family: Tahoma;
+    position: relative;
+    left: 12px;
+	top: -80px;
+}
+#segBuilder {
+	display:none;
+}
+#by {
+	background-color: #f6f7f9;
+    color: #747d94;
+    font-size: 14px;
+    line-height: 1;
+    -webkit-appearance: none;
+    border: 1px solid #647997;
+    border-radius: 5px;
+    text-align: center;
+    float: left;
+    font-family: Tahoma;
+    height: 31px;
+    width: 24px;
+    position: relative;
+    top: 40px;
+    left: 56px;
+}
+#byText {
+	position: relative;
+    top: 8px;
+}
+#propOptions {
+	position: relative;
+    top: 40px;
+    left: 67px;
+}
+.propSelector {
+	display:none;
+}
+#runQuery {
+	position: absolute;
+    top: 117px;
+    left: 275px;
+	font-family: proxima-nova,sans-serif;
+    display: inline-block;
+    padding: 9px 15px;
+    margin-bottom: 0;
+    margin: 0;
+    font-size: 13px;
+    color: #69717e;
+    text-align: center;
+    text-shadow: 0 1px 1px rgba(255,255,255,0.75);
+    vertical-align: middle;
+    background-color: #f6f5f5;
+    background-image: -webkit-linear-gradient(#fdfdfd,#ebe9e9);
+    background-image: linear-gradient(#fdfdfd,#ebe9e9);
+    filter: progid:DXImageTransform.Microsoft.gradient(enabled=false);
+    border: 1px solid #bdbdce;
+    border-bottom-color: #b1b0b9;
+    border-radius: 3px;
+    box-shadow: inset 0 0 0 1px rgba(255,255,255,0.73),0 2px 2px -1px rgba(0,0,0,0.2);
+    cursor: pointer;
+    font-weight: bold;
+    text-decoration: none;
+}
+.textField {
+	position: relative;
+    float: left;
+    left: 137px;
+    top: 86px;
+    height: 24px;
+}

@@ -34,6 +34,11 @@ $(document).ready(function() {
 	$('.modalElement').click(function(){
 		if ($(this).find(".modalDisplay").attr('id') == 'createSeg'){
 			$('#segBuilder').toggle();
+			if ($(".propSelector").css("display") != "none") {
+				$('.propSelector').toggle();
+			}
+			$('#eventOptions').prop('selectedIndex',0);
+			$('#propOptions').prop('selectedIndex',0);
 			MP.api.topEvents().done(function(data){
 				if ($('#eventOptions option').size() == 1){
 					_.each(data.values(), function(eventName, key){
@@ -67,14 +72,13 @@ $(document).ready(function() {
 		var params = {'type':$('.toggleBox-selected.queryType').attr('value')};
 		var eventName = $( "#eventOptions option:selected" ).text();
 		var reportName = $('.textField').val();
-		var chartType = $('.toggleBox-selected.chartType').text().toLowerCase();
-		if (chartType == "bar"){
-			chartType = "column";
+		var chartType = $('.toggleBox-selected.chartType').attr('value');
+		var propName = $( "#propOptions option:selected" ).text();
+		if ($("#propOptions").val() == "placeholder"){
+			propName = false;
 		}
-		if ($("#propOptions").val() != "placeholder"){
-			var propName = $( "#propOptions option:selected" ).text();
-		} else {
-			var propName = false;
+		if (!('to_date' in params) && chartType == 'column' && params.type == 'unique'){
+			params.interval = 7;
 		}
 		segmentQueryBuild(chartType, reportName, eventName, propName, params);
 		$('#modal').toggle();

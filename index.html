@@ -7,6 +7,7 @@
     <link rel="stylesheet" href="index.css">
     <script src="jquery/external/jquery/jquery.js"></script>
     <script src="jquery/jquery-ui.min.js"></script>
+    <link href="jquery/jquery-customselect.css" rel="stylesheet" />
     <script src="underscore-min.js"></script>
     <script src="moment.min.js"></script>
     <script src="https://code.highcharts.com/highcharts.js"></script>
@@ -39,9 +40,9 @@
           </div>
         </div>
         <div class="modalElement">
-          <img class="modalImage" id="retentionImage" src="images/retention.png"/>
-          <div class="modalDisplay" id="createRet">
-            <div class="displayText">Retention</div>
+          <img class="modalImage" id="bookmarksImage" src="images/bookmarks.jpg"/>
+          <div class="modalDisplay" id="bookmarks">
+            <div class="displayText">Bookmarks</div>
           </div>
         </div>
         <div class="modalBuilder" id="segBuilder">
@@ -50,20 +51,26 @@
                 <option selected="selected">Event</option>
              </select>
           </div>
-          <div class="styled-select propSelector">
-          <div id="by"><div id="byText">BY</div></div>
-             <select id="propOptions">
-                <option selected="selected" value="placeholder">Properties</option>
-             </select>
-          <div class="toggleSelector">
-            <div class="toggle toggleBox-selected chartType" value="line">Line</div>
-            <div class="toggle toggleBox chartType" value="column">Bar</div>
+          <div class="styled-select segSelector">
+            <div id="by"><div id="byText">BY</div></div>
+               <select id="propOptions">
+                  <option selected="selected" value="placeholder">Properties</option>
+               </select>
+            <div class="toggleSelector">
+              <div class="toggle toggleBox-selected chartType" value="line">Line</div>
+              <div class="toggle toggleBox chartType" value="column">Bar</div>
+            </div>
+            <div class="toggleSelector">
+              <div class="toggle toggleBox-selected queryType" value="general">Total</div>
+              <div class="toggle toggleBox queryType" value="unique">Unique</div>
+            </div>
+            <input type="text" name="textfield" class="textField" placeholder="Report name" /><div id="runQuery">SHOW</div>
           </div>
-          <div class="toggleSelector">
-            <div class="toggle toggleBox-selected queryType" value="general">Total</div>
-            <div class="toggle toggleBox queryType" value="unique">Unique</div>
-          </div>
-          <input type="text" name="textfield" class="textField" placeholder="Report name" /><div id="runQuery">SHOW</div>
+        </div>
+        <div class="modalBuilder" id="bookmarksBuilder">
+          <div class="bookmarksToggle">
+            <div class="bookmarks"><div class="bookmarksText">Segmentation</div></div>
+            <div class="bookmarks"><div class="bookmarksText">Funnels</div></div>
           </div>
         </div>
       </div>

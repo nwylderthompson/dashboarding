@@ -1,3 +1,6 @@
+var token = "mobilegaming"
+var project_id = "566513"
+
 $(document).ready(function() {
 	get().done(function(data){
 		_.each(data.results[0].$properties, function(data, name){
@@ -9,6 +12,9 @@ $(document).ready(function() {
 		})
 	})
 	initializeMixpanel()
+	getBookmarks().done(function(data){
+		console.log(data)
+	});
 	$("#overlay").click(function(){
 		if ($("#modal").css("display") != "none") {
 			$("#modal").toggle();
@@ -34,8 +40,11 @@ $(document).ready(function() {
 	$('.modalElement').click(function(){
 		if ($(this).find(".modalDisplay").attr('id') == 'createSeg'){
 			$('#segBuilder').toggle();
-			if ($(".propSelector").css("display") != "none") {
-				$('.propSelector').toggle();
+			if ($(".segSelector").css("display") != "none") {
+				$('.segSelector').toggle();
+			}
+			if ($('#bookmarksBuilder').css("display") != "none") {
+				$('#bookmarksBuilder').toggle();
 			}
 			$('#eventOptions').prop('selectedIndex',0);
 			$('#propOptions').prop('selectedIndex',0);
@@ -47,11 +56,18 @@ $(document).ready(function() {
 				}
 			});
 		}
+		if ($(this).find(".modalDisplay").attr('id') == 'bookmarks'){
+			console.log("hi");
+			$('#bookmarksBuilder').toggle()
+			if ($("#segBuilder").css("display") != "none") {
+				$('#segBuilder').toggle();
+			}
+		}
 	})
 	$('#eventOptions').change(function(){
 		var eventName = $( "#eventOptions option:selected" ).text()
-		if ($(".propSelector").css("display") == "none") {
-			$('.propSelector').toggle();
+		if ($(".segSelector").css("display") == "none") {
+			$('.segSelector').toggle();
 		}
 		$('#propOptions').find('option').remove().end().append('<option selected="selected" value="placeholder">Properties</option>').val('placeholder');
 		MP.api.topProperties(eventName).done(function(data){
@@ -83,7 +99,7 @@ $(document).ready(function() {
 		segmentQueryBuild(chartType, reportName, eventName, propName, params);
 		$('#modal').toggle();
 		$('#overlay').toggle();
-		$('.propSelector').toggle();
+		$('.segSelector').toggle();
 		$('#segBuilder').toggle();
 		$('#eventOptions').prop('selectedIndex',0);
 		$('#propOptions').prop('selectedIndex',0);
@@ -93,7 +109,7 @@ $(document).ready(function() {
 });
 
 function initializeMixpanel(){
-	Mixpanels = new Mixpanel("mobilegaming", MP.api.apiSecret)
+	Mixpanels = new Mixpanel(token, MP.api.apiSecret)
 }
 
 function segmentQueryBuild(chartType, name, eventName, propName, params){
@@ -234,3 +250,7 @@ function drawChart(xAxis, series, name, chartType, graphID, containerID){
 function get() {
         return MP.api.query('/api/2.0/engage', {'distinct_id': "dashboardprofile"})
       }
+function getBookmarks() {
+	var url = 'report/'+ project_id + '/bookmarks/segmentation3/list/'
+	return MP.api.query(url, {})
+}

@@ -1,5 +1,5 @@
 body {
-	background-color: #647997;
+	background-color: #d9dfe9;
 }
 .container {
     position:absolute;
@@ -26,8 +26,8 @@ body {
 	margin:auto;
 	width:950px;
 	height:1120px;
-	background-color:#d9dfe9;
-	border-radius: 25px; 
+	background-color:#f0f2f6;
+	border-radius: 5px; 
 	border:1px solid black;
 }
 #title {
@@ -62,7 +62,7 @@ body {
 .displayText {
 	color: white;
     position: relative;
-    font-family: Tahoma;
+    font-family: "Helvetica Neue", helvetica, sans-serif;
     text-align: center;
 }
 .display {
@@ -74,7 +74,6 @@ body {
     border-radius: 5px;
 }
 .deleteImage {
-	z-index: 10;
     height: 15px;
     position: absolute;
     top: 2%;
@@ -139,7 +138,7 @@ body {
     border-radius: 5px;
     text-align: center;
     font-size: 14px;
-    font-family: Tahoma;
+    font-family: "Helvetica Neue", helvetica, sans-serif;
     color: #747d94;
 }
 .toggleBox-selected {
@@ -150,7 +149,7 @@ body {
     border-radius: 5px;
     text-align: center;
     font-size: 14px;
-    font-family: Tahoma;
+    font-family: "Helvetica Neue", helvetica, sans-serif;
     color: #eff1f6;
 }
 .toggle{
@@ -176,7 +175,7 @@ body {
     border-radius: 5px;
     text-align: center;
     float:left;
-    font-family: Tahoma;
+    font-family: "Helvetica Neue", helvetica, sans-serif;
     position: relative;
     left: 12px;
 	top: -80px;
@@ -194,7 +193,7 @@ body {
     border-radius: 5px;
     text-align: center;
     float: left;
-    font-family: Tahoma;
+    font-family: "Helvetica Neue", helvetica, sans-serif;
     height: 31px;
     width: 24px;
     position: relative;
@@ -210,7 +209,7 @@ body {
     top: 40px;
     left: 67px;
 }
-.propSelector {
+.segSelector {
 	display:none;
 }
 #runQuery {
@@ -245,4 +244,28 @@ body {
     left: 137px;
     top: 97px;
     height: 24px;
+}
+.bookmarksToggle{
+    top: 40px;
+    left: 103px;
+    position: relative;
+}
+.bookmarks {
+    position: relative;
+    float: left;
+    background-color: #f6f7f9;
+    height: 34px;
+    width: 108px;
+    border: 1px solid #647997;
+    border-radius: 5px;
+    text-align: center;
+    font-size: 14px;
+    font-family: "Helvetica Neue", helvetica, sans-serif;
+    color: #747d94;
+    margin-left: 20px;
+}
+.bookmarksText {
+    position: relative;
+    top: 8px;
+    font-weight: bold;
 }

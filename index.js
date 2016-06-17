@@ -12,9 +12,6 @@ $(document).ready(function() {
 		})
 	})
 	initializeMixpanel()
-	getBookmarks().done(function(data){
-		console.log(data)
-	});
 	$("#overlay").click(function(){
 		if ($("#modal").css("display") != "none") {
 			$("#modal").toggle();
@@ -46,6 +43,9 @@ $(document).ready(function() {
 			if ($('#bookmarksBuilder').css("display") != "none") {
 				$('#bookmarksBuilder').toggle();
 			}
+			if ($("#funnelBuilder").css("display") != "none") {
+				$('#funnelBuilder').toggle();
+			}
 			$('#eventOptions').prop('selectedIndex',0);
 			$('#propOptions').prop('selectedIndex',0);
 			MP.api.topEvents().done(function(data){
@@ -55,12 +55,36 @@ $(document).ready(function() {
 					});
 				}
 			});
+			$('#eventOptions').select2();
 		}
-		if ($(this).find(".modalDisplay").attr('id') == 'bookmarks'){
-			console.log("hi");
-			$('#bookmarksBuilder').toggle()
+		if ($(this).find(".modalDisplay").attr('id') == 'createRet'){
+			$('#bookmarksBuilder').toggle();
 			if ($("#segBuilder").css("display") != "none") {
 				$('#segBuilder').toggle();
+			}
+			if ($("#funnelBuilder").css("display") != "none") {
+				$('#funnelBuilder').toggle();
+			}
+		}
+		if ($(this).find(".modalDisplay").attr('id') == 'createFun'){
+			$('#funnelBuilder').toggle();
+			$('#funnelOptions').select2();
+			if ($("#segBuilder").css("display") != "none") {
+				$('#segBuilder').toggle();
+			}
+			if ($('#bookmarksBuilder').css("display") != "none") {
+				$('#bookmarksBuilder').toggle();
+			}
+			if ($('#funnelOptions option').size() == 1){
+				getFunnels().done(function(data){
+					if ($('#funnelOptions option').size() == 1){
+						_.each(data, function(funnel){
+							var funnel_id = funnel.funnel_id
+							var funnel_name = funnel.name
+							$('<option value="'+ funnel_id +'">'+funnel_name+'</option>').appendTo('#funnelOptions');
+						});
+					}
+				})
 			}
 		}
 	})
@@ -75,6 +99,7 @@ $(document).ready(function() {
 				$('<option>'+propName+'</option>').appendTo('#propOptions');
 			});
 		});
+		$('#propOptions').select2();
 	});
 	$('.toggle').click(function(){
 		if ($(this).attr('class').indexOf('chartType') > 0){
@@ -250,7 +275,7 @@ function drawChart(xAxis, series, name, chartType, graphID, containerID){
 function get() {
         return MP.api.query('/api/2.0/engage', {'distinct_id': "dashboardprofile"})
       }
-function getBookmarks() {
-	var url = 'report/'+ project_id + '/bookmarks/segmentation3/list/'
+function getFunnels() {
+	var url = 'https://mixpanel.com/api/2.0/funnels/list/'
 	return MP.api.query(url, {})
 }

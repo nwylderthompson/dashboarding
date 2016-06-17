@@ -113,21 +113,27 @@ body {
     height: 200px;
 }
 #overlay {
-       background-color: #3c4c63 ;
-       height: 100%;
-       left: 0;
-       opacity: .8;
-       position: fixed;
-       top: 0;
-       width: 100%;
-       z-index: 10;
-       display:none;
+   background-color: #3c4c63 ;
+   height: 100%;
+   left: 0;
+   opacity: .8;
+   position: fixed;
+   top: 0;
+   width: 100%;
+   z-index: 10;
+   display:none;
 }
 .eventSelector {
 	position: relative;
     float: left;
-    top: 120px;
-    left: 33px;
+    top: 43px;
+    left: 46px;
+    z-index: 1
+}
+.funnelSelector{
+    position: relative;
+    top: 69px;
+    left: 115px;
 }
 
 .toggleBox {
@@ -156,11 +162,16 @@ body {
 	position: relative;
     float: left;
     display: block;
-    top: 87px;
-    left: -188px;
+    top: 57px;
+    left: -13px;
     cursor: pointer;
     margin-bottom: 6px;
     margin-left: 3px;
+}
+#uniqueTotal {
+    position: relative;
+    top: 29px;
+    left: -110px;
 }
 .styled-select select{
    	background-color: #f6f7f9;
@@ -183,21 +194,27 @@ body {
 #segBuilder {
 	display:none;
 }
+#bookmarksBuilder {
+    display: none;
+}
+#funnelBuilder {
+    display: none;
+}
 #by {
-	background-color: #f6f7f9;
+    background-color: #f6f7f9;
     color: #747d94;
     font-size: 14px;
-    line-height: 1;
+    line-height: .9;
     -webkit-appearance: none;
     border: 1px solid #647997;
     border-radius: 5px;
     text-align: center;
     float: left;
     font-family: "Helvetica Neue", helvetica, sans-serif;
-    height: 31px;
+    height: 27px;
     width: 24px;
     position: relative;
-    top: 40px;
+    top: 42px;
     left: 56px;
 }
 #byText {
@@ -213,10 +230,12 @@ body {
 	display:none;
 }
 #runQuery {
-	position: relative;
-    top: 92px;
-    left: 146px;
-	font-family: proxima-nova,sans-serif;
+    position: relative;
+    top: 116px;
+    left: -146px;
+}
+.query {
+    font-family: proxima-nova,sans-serif;
     display: inline-block;
     padding: 9px 15px;
     margin-bottom: 0;
@@ -238,17 +257,60 @@ body {
     font-weight: bold;
     text-decoration: none;
 }
+#buildFunnel {
+    position: relative;
+    left: 9px;
+    height: 9px;
+    top: -1px;
+    line-height: 0.8;
+
+}
+
 .textField {
 	position: relative;
     float: left;
     left: 137px;
-    top: 97px;
+    top: 92px;
     height: 24px;
 }
 .bookmarksToggle{
     top: 40px;
     left: 103px;
     position: relative;
+}
+#select2-eventOptions-container {
+    color:#747d94;
+    font-size: 14px;
+    font-family: "Helvetica Neue", helvetica, sans-serif;
+}
+#select2-propOptions-container {
+    color:#747d94;
+    font-size: 14px;
+    font-family: "Helvetica Neue", helvetica, sans-serif;
+}
+#select2-funnelOptions-container {
+    color:#747d94;
+    font-size: 14px;
+    font-family: "Helvetica Neue", helvetica, sans-serif;
+}
+.select2-results__options {
+    color:#747d94;
+    font-size: 14px;
+    font-family: "Helvetica Neue", helvetica, sans-serif;
+}
+#propertyFilter {
+    position: relative;
+    top: 42px;
+    left: 64px;
+}
+#comingSoon {
+    color:#747d94;
+    font-size: 20px;
+    font-family: "Helvetica Neue", helvetica, sans-serif;
+    position: relative;
+    height: 20px;
+    top: 45px;
+    left: 179px;
 }
 .bookmarks {
     position: relative;

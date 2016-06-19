@@ -256,6 +256,8 @@ function processChartData(chartType, data, title){
 				series.push(current)
 			}
 		})
+		var steps  = Math.ceil(xAxis.categories.length/6)
+		xAxis.labels = {step:steps, staggerLines:1}
 	}
 	if (chartType == "column"){
 		xAxis.categories.push(title);
@@ -272,8 +274,6 @@ function processChartData(chartType, data, title){
 			}
 		});
 	}
-	var steps  = Math.ceil(xAxis.categories.length/6)
-	xAxis.labels = {step:steps, staggerLines:1}
 	return [series, xAxis]
 }
 
@@ -327,28 +327,30 @@ function reloadCharts(from_date, to_date){
 	var to_date = to_date || false;
 	var from_date = from_date || false;
 	get().done(function(data){
-		_.each(data.results[0].$properties, function(data, name){
-			if (name != "$last_seen" && name != "$predict_grade"){
-				_.each(data, function(graphData){
-					if (to_date){
-						graphData.query.params.params.to_date = $("#toDate").val()
-						graphData.query.params.params.from_date = $("#fromDate").val()
-					}
-					loadChart(graphData);
-					if (queryParams.params.params.to_date) {
-						$('#fromDateText').text(returnDateText(queryParams.params.params.from_date))
-						$('#fromDate').val(queryParams.params.params.from_date)
-						$('#toDateText').text(returnDateText(queryParams.params.params.to_date))
-						$('#toDate').val(queryParams.params.params.to_date)
-					} else {
-						$('#fromDateText').text(returnDateText(moment().subtract(7, 'days')))
-						$('#fromDate').val(moment().subtract(7, 'days').format('YYYY-MM-DD'))
-						$('#toDateText').text(returnDateText(moment()))
-						$('#toDate').val(moment().format('YYYY-MM-DD'))
-					}
-				})
-			}
-		})
+		if (data.results.length > 0){
+			_.each(data.results[0].$properties, function(data, name){
+				if (name != "$last_seen" && name != "$predict_grade"){
+					_.each(data, function(graphData){
+						if (to_date){
+							graphData.query.params.params.to_date = $("#toDate").val()
+							graphData.query.params.params.from_date = $("#fromDate").val()
+						}
+						loadChart(graphData);
+						if (queryParams.params.params.to_date) {
+							$('#fromDateText').text(returnDateText(queryParams.params.params.from_date))
+							$('#fromDate').val(queryParams.params.params.from_date)
+							$('#toDateText').text(returnDateText(queryParams.params.params.to_date))
+							$('#toDate').val(queryParams.params.params.to_date)
+						} 					
+					})
+				}
+			})
+		} else {
+			$('#fromDateText').text(returnDateText(moment().subtract(7, 'days')))
+			$('#fromDate').val(moment().subtract(7, 'days').format('YYYY-MM-DD'))
+			$('#toDateText').text(returnDateText(moment()))
+			$('#toDate').val(moment().format('YYYY-MM-DD'))
+		}
 	})
 }
 

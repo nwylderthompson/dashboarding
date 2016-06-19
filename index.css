@@ -407,6 +407,7 @@ body {
     color: blue !important;
 }
 input[type=button] {
+    cursor:pointer;
     border-color: transparent;
     color:transparent;
     background-color:transparent;

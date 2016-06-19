@@ -283,7 +283,10 @@ function drawChart(xAxis, series, name, chartType, graphID, containerID){
 						text:name
 					},
 					xAxis: xAxis,
-					series: series
+					series: series,
+					yAxis: {
+						min: 0
+					}
 				})
 	$("#" + containerID).draggable({
 		start: function() {

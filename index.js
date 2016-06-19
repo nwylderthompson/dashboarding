@@ -70,15 +70,17 @@ $(document).ready(function() {
 			$('#propOptions').prop('selectedIndex',0);
 			if ($('#eventOptions option').size() == 1){
 				MP.api.topEvents().done(function(data){
-					_.each(data.values(), function(eventName, key){
-						$('<option value="'+ eventName +'">'+eventName+'</option>').appendTo('#eventOptions');
-					});
 					customEvent().done(function(events){
+						$('#eventOptions').find('option').remove().end()
+						_.each(data.values(), function(eventName, key){
+							$('<option value="'+ eventName +'">'+eventName+'</option>').appendTo('#eventOptions');
+						});
 						_.each(events.custom_events, function(values){
 							var eventName = values.name
 							var eventValue = "$custom_event:" + values.id
 							$('<option value="'+ eventValue +'">'+eventName+'</option>').appendTo('#eventOptions');
 						})
+						loadProperties()
 					})
 				});
 			}
@@ -116,17 +118,7 @@ $(document).ready(function() {
 		}
 	})
 	$('#eventOptions').change(function(){
-		var eventName = $( "#eventOptions option:selected" ).val()
-		if ($(".segSelector").css("display") == "none") {
-			$('.segSelector').toggle();
-		}
-		$('#propOptions').find('option').remove().end().append('<option selected="selected" value="placeholder">Properties</option>').val('placeholder');
-		MP.api.topProperties(eventName).done(function(data){
-			_.each(data.values(), function(value, propName){
-				$('<option>'+propName+'</option>').appendTo('#propOptions');
-			});
-		});
-		$('#propOptions').select2();
+		loadProperties()
 	});
 	$('.toggle').click(function(){
 		if ($(this).attr('class').indexOf('chartType') > 0){
@@ -163,13 +155,13 @@ $(document).ready(function() {
 	})
 	$('#buildFunnel').click(function(){
 		var reportName = $("#funnelOptions option:selected").text();
-		var chartType = "funnel";
-		var params = {};
+		var chartType = "funnel"
+		var params = {}
 		params.funnel_id = $("#funnelOptions option:selected").val();
-		params.to_date = $("#toDate").val();
-		params.from_date = $("#fromDate").val();
-		params.interval = moment(params.to_date).diff(moment(params.from_date), 'days') + 1;
-		funnelQueryBuild(chartType, reportName, params);
+		params.to_date = $("#toDate").val()
+		params.from_date = $("#fromDate").val()
+		params.interval = moment(params.to_date).diff(moment(params.from_date), 'days') + 1
+		funnelQueryBuild(chartType, reportName, params)
 		$('#modal').toggle();
 		$('#overlay').toggle();
 		$('#funnelBuilder').toggle();
@@ -346,6 +338,9 @@ function drawChart(xAxis, series, name, chartType, graphID, containerID){
 			cursor: "move",
 			obstacle: ".container",
 	    	preventCollision: true,
+	    	stack: "#" + containerID,
+	    	zIndex:20,
+	    	snapMode: "outter"
 	}).resizable({
 		containment: "#dashboard",
 		resize: function () {
@@ -387,6 +382,20 @@ function reloadCharts(){
 			}
 		});
 	})
+}
+
+function loadProperties() {
+	var eventName = $( "#eventOptions option:selected" ).val()
+	if ($(".segSelector").css("display") == "none") {
+		$('.segSelector').toggle();
+	}
+	$('#propOptions').find('option').remove().end().append('<option selected="selected" value="placeholder">Properties</option>').val('placeholder');
+	MP.api.topProperties(eventName).done(function(data){
+		_.each(data.values(), function(value, propName){
+			$('<option>'+propName+'</option>').appendTo('#propOptions');
+		});
+	});
+	$('#propOptions').select2();
 }
 
 function saveDash() {

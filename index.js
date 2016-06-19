@@ -138,10 +138,10 @@ $(document).ready(function() {
 	});
 	$('#runQuery').click(function(){
 		var params = {'type':$('.toggleBox-selected.queryType').attr('value')};
-		params.to_date = $("#toDate").val()
-		params.from_date = $("#fromDate").val()
-		var eventName = $( "#eventOptions option:selected" ).val();
-		var eventTitle = $( "#eventOptions option:selected" ).text();
+		params.to_date = $("#toDate").val();
+		params.from_date = $("#fromDate").val();
+		var eventName = $("#eventOptions option:selected").val();
+		var eventTitle = $("#eventOptions option:selected").text();
 		var reportName = $('.textField').val();
 		var chartType = $('.toggleBox-selected.chartType').attr('value');
 		var propName = $( "#propOptions option:selected" ).text();
@@ -149,7 +149,7 @@ $(document).ready(function() {
 			propName = false;
 		}
 		if (chartType == "column" && params.type == "unique"){
-			params.interval = moment(params.to_date).diff(moment(params.from_date), 'days')
+			params.interval = moment(params.to_date).diff(moment(params.from_date), 'days') + 1
 		}
 		segmentQueryBuild(chartType, reportName, eventName, propName, params, eventTitle);
 		$('#modal').toggle();
@@ -160,6 +160,16 @@ $(document).ready(function() {
 		$('#propOptions').prop('selectedIndex',0);
 		$('.textField').val('');
 		$('#saveDash').css({"background-color":"#3f516b", "cursor":"pointer"})
+	})
+	$('#buildFunnel').click(function(){
+		var reportName = $("#funnelOptions option:selected").text();
+		var chartType = "funnel"
+		var params = {}
+		params.funnel_id = $("#funnelOptions option:selected").val();
+		params.to_date = $("#toDate").val()
+		params.from_date = $("#fromDate").val()
+		params.interval = moment(params.to_date).diff(moment(params.from_date), 'days') + 1
+		funnelQueryBuild(chartType, reportName, params)
 	})
 });
 
@@ -175,11 +185,17 @@ function segmentQueryBuild(chartType, name, eventName, propName, params, eventTi
 	}
 	var reportParams = {params:{event:eventName, on:propName, params:params}, chartType:chartType, name:name, eventTitle:eventTitle}
 	Mixpanels.segment(eventName, propName, params).done(function(data){
-		Chart(name, data, chartType, reportParams, title);
+		chart(name, data, chartType, reportParams, title);
 	});
 }
+function funnelQueryBuild(chartType, name, params){
+	var reportParams = {params:{params:params}, chartType:chartType, name:name}
+	getFunnelData(params).done(function(data){
+		chart(name, data.data, chartType, reportParams)
+	})
+}
 
-function Chart(name, data, chartType, reportParams, title){
+function chart(name, data, chartType, reportParams, title){
 	var results = processChartData(chartType, data, title)
 	var series = results[0];
 	var xAxis = results[1];
@@ -204,19 +220,6 @@ function loadChart(graphData){
 	$("#"+containerID).css(graphData.position);
 	$("#"+containerID).width(graphData.dimensions.width);
 	$("#"+containerID).height(graphData.dimensions.height);
-	var chartType = queryParams.chartType;
-	var eventName = queryParams.params.event;
-	var propName = queryParams.params.on;
-	//for bar chart labeling
-	if (propName){
-		var title = propName;
-	} else {
-		var title = queryParams.eventTitle;
-	}
-	var params = queryParams.params.params
-	params.to_date = moment(params.to_date).format('YYYY-MM-DD')
-	params.from_date = moment(params.from_date).format('YYYY-MM-DD')
-	var name = queryParams.name;
 	var graphID = "graph_" + new Date().getTime().toString();
 	var graphDiv = $('<div class="graph" id=' + graphID + '></div>').appendTo('#'+containerID);
 	$('<div class="delete"><img class="deleteImage" src="images/delete.png"/></div>').appendTo('#'+containerID);
@@ -224,15 +227,37 @@ function loadChart(graphData){
 		$(this).parent().remove()
 		$('#saveDash').css({"background-color":"#3f516b", "cursor":"pointer"})
 	});
-	Mixpanels.segment(eventName, propName, params).done(function(data){
-		results = processChartData(chartType, data, title)
-		var series = results[0];
-		var xAxis = results[1];
-		drawChart(xAxis, series, name, chartType, graphID, containerID);
-	});
+	var params = queryParams.params.params
+	params.to_date = moment(params.to_date).format('YYYY-MM-DD')
+	params.from_date = moment(params.from_date).format('YYYY-MM-DD')
+	var name = queryParams.name;
+	var chartType = queryParams.chartType;
+	if (chartType == "line" || chartType == "column"){
+		var eventName = queryParams.params.event;
+		var propName = queryParams.params.on;
+		//for bar chart labeling
+		if (propName){
+			var title = propName;
+		} else {
+			var title = queryParams.eventTitle;
+		}
+		Mixpanels.segment(eventName, propName, params).done(function(data){
+			results = processChartData(chartType, data, title)
+			var series = results[0];
+			var xAxis = results[1];
+			drawChart(xAxis, series, name, chartType, graphID, containerID);
+		});
+	}else if (chartType == "funnel") {
+		getFunnelData(params).done(function(data){
+			results = processChartData(chartType, data.data, title)
+			var series = results[0];
+			var xAxis = results[1];
+			drawChart(xAxis, series, name, chartType, graphID, containerID);
+		})
+	}
 }
 
-function processChartData(chartType, data, title){
+function processChartData(chartType, data, segmentTitle){
 	var xAxis = {categories:[]};
 	var dates = []
 	var series = [];
@@ -247,7 +272,7 @@ function processChartData(chartType, data, title){
 			var current = {'name':segment, data:[]};
 			//for naming custom events
 			if (Object.keys(output).length == 1){
-				var current = {'name':title, data:[]};
+				var current = {'name':segmentTitle, data:[]};
 			}
 			_.each(dates, function(value, key){
 				current.data.push(results[value]);
@@ -259,9 +284,8 @@ function processChartData(chartType, data, title){
 		})
 		var steps  = Math.ceil(xAxis.categories.length/6)
 		xAxis.labels = {step:steps, staggerLines:1}
-	}
-	if (chartType == "column"){
-		xAxis.categories.push(title);
+	} else if (chartType == "column"){
+		xAxis.categories.push(segmentTitle);
 		_.each(data.data.values, function(values, segment){
 			var current = {'name':segment, data:[]};
 			var series_sum = 0
@@ -274,13 +298,28 @@ function processChartData(chartType, data, title){
 				series.push(current)
 			}
 		});
+	} else if (chartType == "funnel") {
+		_.each(data, function(funnelData){
+			var conversion = ((funnelData.analysis.completion / funnelData.analysis.starting_amount)*100).toFixed(2)
+			xAxis.categories.push("Overall Conversion " + conversion + "%")
+			_.each(funnelData.steps, function(stepData){
+				var current = {'name':stepData.event, data:[]};
+				current.data.push(stepData.count)
+				series.push(current)
+			});
+		});
 	}
 	return [series, xAxis]
 }
 
 function drawChart(xAxis, series, name, chartType, graphID, containerID){
+	colors = ["#53a3eb", "#32BBBD", "#a28ccb", "#da7b80", "#2bb5e2", "#e8bc66", "#d390b6"]
+	if (chartType == "funnel"){
+		chartType = "column"
+		colors = ["#53a3eb"]
+	} 
 	var chart = new Highcharts.Chart({
-					colors: ["#53a3eb", "#32BBBD", "#a28ccb", "#da7b80", "#2bb5e2", "#e8bc66", "#d390b6"],
+					colors: colors,
 					chart: {
 						type: chartType,
 						renderTo: graphID
@@ -296,13 +335,13 @@ function drawChart(xAxis, series, name, chartType, graphID, containerID){
 				})
 	$("#" + containerID).draggable({
 		start: function() {
-			$('#saveDash').css({"background-color":"#3f516b", "cursor":"pointer"})
-		},
-		snap: true,
-		containment: "#dashboard",
-		cursor: "move",
-		obstacle: ".container",
-    	preventCollision: true,
+				$('#saveDash').css({"background-color":"#3f516b", "cursor":"pointer"})
+			},
+			snap: true,
+			containment: "#dashboard",
+			cursor: "move",
+			obstacle: ".container",
+	    	preventCollision: true,
 	}).resizable({
 		containment: "#dashboard",
 		resize: function () {
@@ -346,18 +385,6 @@ function reloadCharts(){
 	})
 }
 
-function get() {
-        return MP.api.query('/api/2.0/engage', {'distinct_id': "dashboardprofile"})
-      }
-
-function customEvent() {
-	return MP.api.query('/api/2.0/custom_events', {})
-}
-
-function getFunnels() {
-	var url = 'https://mixpanel.com/api/2.0/funnels/list/'
-	return MP.api.query(url, {})
-}
 function saveDash() {
 	var dashboardData = {test:[]};
 	_.each($('#dashboard').children(), function(report){
@@ -377,7 +404,7 @@ function dateShift() {
 		var reportData = {};
 		reportData.query = JSON.parse(atob(report.dataset.report));
 		if (reportData.query.params.params.interval){
-			reportData.query.params.params.interval = moment($("#toDate").val()).diff(moment($("#fromDate").val()), 'days')
+			reportData.query.params.params.interval = moment($("#toDate").val()).diff(moment($("#fromDate").val()), 'days') + 1
 		}
 		reportData.query.params.params.to_date = $("#toDate").val()
 		reportData.query.params.params.from_date = $("#fromDate").val()
@@ -389,4 +416,21 @@ function dateShift() {
 	_.each(reports, function(reportData){
 		loadChart(reportData)
 	})
+}
+
+function get() {
+        return MP.api.query('/api/2.0/engage', {'distinct_id': "dashboardprofile"})
+      }
+
+function customEvent() {
+	return MP.api.query('/api/2.0/custom_events', {})
+}
+
+function getFunnels() {
+	var url = 'https://mixpanel.com/api/2.0/funnels/list/'
+	return MP.api.query(url, {})
+}
+
+function getFunnelData(params) {
+	return MP.api.query('/api/2.0/funnels', params)
 }

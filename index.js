@@ -11,14 +11,16 @@ $(document).ready(function() {
 	      	if (moment($("#fromDate").val()).add(7, 'days') > moment()){
 	      		$("#toDateText").text(returnDateText(moment()));
 	      		$("#toDate").val(moment().format("YYYY-MM-DD"));
+	      		$("#toDatePicker").val(moment().format("MM/DD/YYYY"))
 	      	} else {
 	      		$("#toDateText").text(returnDateText(moment($("#fromDate").val()).add(7, 'days')));
 	      		$("#toDate").val(moment($("#fromDate").val()).add(7, 'days').format("YYYY-MM-DD"));
+	      		$("#toDatePicker").val(moment($("#fromDate").val()).add(7, 'days').format("MM/DD/YYYY"))
 	      	}	
 	      }
 	      $('#saveDash').css({"background-color":"#3f516b", "cursor":"pointer"});
 	      $("#dashboard").empty();
-	      reloadCharts($("#fromDate").val(), $("#toDate").val())
+	      reloadCharts($("#fromDate").val(), $("#toDate").val());
     	},
     	maxDate: "+0D"
     });
@@ -29,10 +31,12 @@ $(document).ready(function() {
 	      if ($("#fromDate").val() > $("#toDate").val()) {
 	      	$("#fromDateText").text(returnDateText(moment($("#toDate").val()).subtract(7, 'days')));
 	      	$("#fromDate").val(moment($("#toDate").val()).subtract(7, 'days').format("YYYY-MM-DD"));
+	      	$("#fromDatePicker").val(moment($("#toDate").val()).subtract(7, 'days').format("MM/DD/YYYY"))
 	      }
 	      $('#saveDash').css({"background-color":"#3f516b", "cursor":"pointer"});
 	      $("#dashboard").empty();
-	      reloadCharts($("#fromDate").val(), $("#toDate").val())
+	      reloadCharts($("#fromDate").val(), $("#toDate").val());
+	      console.log($("#toDatePicker").val())
     	},
     	maxDate: "+0D"
 	});

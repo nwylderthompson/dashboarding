@@ -73,6 +73,16 @@ body {
     height: 23px;
     border-radius: 5px;
 }
+.displayDate {
+    width: 106px;
+    margin-left: 11px;
+}
+.dates{
+    position: relative;
+    top: 47px;
+    left: 14px;
+    width: 400px;
+}
 .deleteImage {
     height: 15px;
     position: absolute;
@@ -330,4 +340,74 @@ body {
     position: relative;
     top: 8px;
     font-weight: bold;
+}
+.arrow-up {
+  width: 0; 
+  height: 0; 
+  border-left: 5px solid transparent;
+  border-right: 5px solid transparent;
+  
+  border-bottom: 5px solid black;
+}
+.datePicker {
+    position: absolute;
+    z-index: 5;
+}
+#fromDatePicker {
+    top: 73px;
+    position: relative;
+    left: 28px;
+    width: 100px;
+}
+#toDatePicker {
+    position: relative;
+    top: 72px;
+    width: 100px;
+    left: 145px;
+}
+.dateText {
+    font-size: 13px;
+    text-align: center;
+    line-height: 1.8;
+}
+.ui-datepicker {
+    width: 17em;
+    padding: .2em .2em 0;
+    display: none;
+    background-color: #647997;
+}
+.ui-datepicker .ui-datepicker-title {
+    margin: 0 2.3em;
+    line-height: 1.8em;
+    text-align: center;
+    background-color: #d9dfe9;
+    font-family: "Helvetica Neue", helvetica, sans-serif;
+    color: #647997;
+}
+.ui-datepicker .ui-datepicker-header {
+    position: relative;
+    padding: .2em 0;
+    background-color: #f0f2f6;
+}
+.ui-datepicker th {
+    color: #f0f2f6;
+    padding: .7em .3em;
+    text-align: center;
+    font-weight: bold;
+    border: 0;
+    font-family: "Helvetica Neue", helvetica, sans-serif;
+}
+.ui-state-default, .ui-widget-content .ui-state-default, .ui-widget-header .ui-state-default {
+    border: 1px solid #c5c5c5;
+    background: #f6f6f6;
+    font-weight: normal;
+    color: #647997;
+}
+.ui-state-hover, .ui-widget-content, .ui-state-hover {
+    color: blue !important;
+}
+input[type=button] {
+    border-color: transparent;
+    color:transparent;
+    background-color:transparent;
 }

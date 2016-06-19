@@ -1,8 +1,8 @@
 Query Funnel
 Build Funnel Chart
-Date Ranges support
 Names for Dashboards (multiple dashboard support)
 Snap into place graphs ----- Eh
+Date Ranges support ---- DONE
 Load saved ----- DONE
 Alert when saved ----- DONE
 Delete functionality ----- DONE

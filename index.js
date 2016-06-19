@@ -2,16 +2,42 @@ var token = "mobilegaming"
 var project_id = "566513"
 
 $(document).ready(function() {
-	get().done(function(data){
-		_.each(data.results[0].$properties, function(data, name){
-			if (name != "$last_seen" && name != "$predict_grade"){
-				_.each(data, function(graphData){
-					loadChart(graphData);
-				})
-			}
-		})
-	})
+	reloadCharts();
 	initializeMixpanel()
+	$('#fromDatePicker').datepicker({
+	    onSelect: function(dateText, inst) {
+	      $("#fromDateText").text(returnDateText(dateText));
+	      $("#fromDate").val(moment(dateText).format("YYYY-MM-DD"));
+	      if ($("#fromDate").val() > $("#toDate").val()) {
+	      	if (moment($("#fromDate").val()).add(7, 'days') > moment()){
+	      		$("#toDateText").text(returnDateText(moment()));
+	      		$("#toDate").val(moment().format("YYYY-MM-DD"));
+	      	} else {
+	      		$("#toDateText").text(returnDateText(moment($("#fromDate").val()).add(7, 'days')));
+	      		$("#toDate").val(moment($("#fromDate").val()).add(7, 'days').format("YYYY-MM-DD"));
+	      	}	
+	      }
+	      $('#saveDash').css({"background-color":"#3f516b", "cursor":"pointer"});
+	      $("#dashboard").empty();
+	      reloadCharts($("#fromDate").val(), $("#toDate").val())
+    	},
+    	maxDate: "+0D"
+    });
+	$('#toDatePicker').datepicker({
+	    onSelect: function(dateText, inst) {
+	      $('#toDateText').text(returnDateText(dateText));
+	      $("#toDate").val(moment(dateText).format("YYYY-MM-DD"));
+	      if ($("#fromDate").val() > $("#toDate").val()) {
+	      	$("#fromDateText").text(returnDateText(moment($("#toDate").val()).subtract(7, 'days')));
+	      	$("#fromDate").val(moment($("#toDate").val()).subtract(7, 'days').format("YYYY-MM-DD"));
+	      }
+	      $('#saveDash').css({"background-color":"#3f516b", "cursor":"pointer"});
+	      $("#dashboard").empty();
+	      reloadCharts($("#fromDate").val(), $("#toDate").val())
+    	},
+    	maxDate: "+0D"
+	});
+
 	$("#overlay").click(function(){
 		if ($("#modal").css("display") != "none") {
 			$("#modal").toggle();
@@ -22,18 +48,22 @@ $(document).ready(function() {
 		$('#modal').toggle();
 		$('#overlay').toggle();	
 	});
-	$('#saveDash').click(function(){
-		$(this).css({"background-color":"#647997", "cursor":"default"})
-		var dashboardData = {test:[]};
-		_.each($('#dashboard').children(), function(report){
-			var reportData = {};
-			reportData.query = atob(report.dataset.report);
-			reportData.position = $("#" + report.id).position()
-			reportData.dimensions = {height:$("#" + report.id).height(), width:$("#" + report.id).width()}
-			dashboardData.test.push(reportData);
-		});
-		Mixpanels.people_set(dashboardData, 'dashboardprofile')
-	});
+	$('#saveDash').click(
+		function(){
+			$(this).css({"background-color":"#647997", "cursor":"default"})
+			var dashboardData = {test:[]};
+			_.each($('#dashboard').children(), function(report){
+				var reportData = {};
+				reportData.query = JSON.parse(atob(report.dataset.report));
+				reportData.query.params.params.to_date = $("#toDate").val()
+				reportData.query.params.params.from_date = $("#fromDate").val()
+				reportData.position = $("#" + report.id).position()
+				reportData.dimensions = {height:$("#" + report.id).height(), width:$("#" + report.id).width()}
+				dashboardData.test.push(reportData);
+			});
+			Mixpanels.people_set(dashboardData, 'dashboardprofile')
+		}
+	);
 	$('.modalElement').click(function(){
 		if ($(this).find(".modalDisplay").attr('id') == 'createSeg'){
 			$('#segBuilder').toggle();
@@ -111,6 +141,8 @@ $(document).ready(function() {
 	});
 	$('#runQuery').click(function(){
 		var params = {'type':$('.toggleBox-selected.queryType').attr('value')};
+		params.to_date = $("#toDate").val()
+		params.from_date = $("#fromDate").val()
 		var eventName = $( "#eventOptions option:selected" ).text();
 		var reportName = $('.textField').val();
 		var chartType = $('.toggleBox-selected.chartType').attr('value');
@@ -167,7 +199,7 @@ function Chart(name, data, chartType, reportParams, title){
 }
 
 function loadChart(graphData){
-	queryParams = JSON.parse(graphData.query);
+	queryParams = graphData.query;
 	var reportParams = btoa(JSON.stringify(queryParams));
 	var containerID = "container_" + new Date().getTime().toString();
 	var containerDiv = $("<div class='container' data-report=" + reportParams + " id=" + containerID + "></div>").appendTo('#dashboard');
@@ -181,7 +213,9 @@ function loadChart(graphData){
 	} else {
 		var title = eventName;
 	}
-	var selector = queryParams.params.selector || false;
+	var params = queryParams.params.params
+	params.to_date = moment(params.to_date).format('YYYY-MM-DD')
+	params.from_date = moment(params.from_date).format('YYYY-MM-DD')
 	var chartType = queryParams.chartType;
 	var name = queryParams.name;
 	var graphID = "graph_" + new Date().getTime().toString();
@@ -191,7 +225,7 @@ function loadChart(graphData){
 		$(this).parent().remove()
 		$('#saveDash').css({"background-color":"#3f516b", "cursor":"pointer"})
 	});
-	Mixpanels.segment(eventName, propName, selector).done(function(data){
+	Mixpanels.segment(eventName, propName, params).done(function(data){
 		results = processChartData(chartType, data, title)
 		var series = results[0];
 		var xAxis = results[1];
@@ -201,15 +235,17 @@ function loadChart(graphData){
 
 function processChartData(chartType, data, title){
 	var xAxis = {categories:[]};
+	var dates = []
 	var series = [];
 	var x = 0;
 	if (chartType == "line"){
 		_.each(data.data.series, function(value, key){
-			xAxis.categories.push(value)
+			xAxis.categories.push(moment(value).format("MMM Do"))
+			dates.push(value)
 		});
 		_.each(data.data.values, function(values, segment){
 			var current = {'name':segment, data:[]};
-			_.each(xAxis.categories, function(value, key){
+			_.each(dates, function(value, key){
 				current.data.push(values[value]);
 			});
 			x++
@@ -271,6 +307,42 @@ function drawChart(xAxis, series, name, chartType, graphID, containerID){
 	});
 }
 
+function returnDateText(date) {
+	var result = moment(date).format('MMMM Do YYYY')
+	if (result.length > 15) {
+		result = moment(date).format('MMM Do YYYY')
+	}
+	return result
+}
+
+function reloadCharts(from_date, to_date){
+	var to_date = to_date || false;
+	var from_date = from_date || false;
+	get().done(function(data){
+		_.each(data.results[0].$properties, function(data, name){
+			if (name != "$last_seen" && name != "$predict_grade"){
+				_.each(data, function(graphData){
+					if (to_date){
+						graphData.query.params.params.to_date = $("#toDate").val()
+						graphData.query.params.params.from_date = $("#fromDate").val()
+					}
+					loadChart(graphData);
+					if (queryParams.params.params.to_date) {
+						$('#fromDateText').text(returnDateText(queryParams.params.params.from_date))
+						$('#fromDate').val(queryParams.params.params.from_date)
+						$('#toDateText').text(returnDateText(queryParams.params.params.to_date))
+						$('#toDate').val(queryParams.params.params.to_date)
+					} else {
+						$('#fromDateText').text(returnDateText(moment().subtract(7, 'days')))
+						$('#fromDate').val(moment().subtract(7, 'days').format('YYYY-MM-DD'))
+						$('#toDateText').text(returnDateText(moment()))
+						$('#toDate').val(moment().format('YYYY-MM-DD'))
+					}
+				})
+			}
+		})
+	})
+}
 
 function get() {
         return MP.api.query('/api/2.0/engage', {'distinct_id': "dashboardprofile"})

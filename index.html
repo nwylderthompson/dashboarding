@@ -11,6 +11,7 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.3/js/select2.min.js"></script>
     <script src="underscore-min.js"></script>
     <script src="moment.min.js"></script>
+    <link rel="stylesheet" href="datepicker.css"/>
     <script src="https://code.highcharts.com/highcharts.js"></script>
     <script src="mp_lib.js"></script>
     <script src="index.js"></script>
@@ -26,6 +27,18 @@
       </div>
       <div class="display" id="saveDash">
         <div class="displayText" id="saveDashText">Save</div>
+      </div>
+      <div class="dates">
+        <div class="displayDate display" id="fromDate" value=""><div class="dateText displayText" id="fromDateText"></div></div>
+        <div class="displayDate display" id="toDate" value=""><div class="dateText displayText" id="toDateText"></div></div>
+      </div>
+      <div class="datePicker">
+        <!-- <div class="arrow-up"></div> -->
+        <input type="button" id="fromDatePicker">
+      </div>
+        <div class="datePicker">
+        <!-- <div class="arrow-up"></div> -->
+        <input type="button" id="toDatePicker">
       </div>
       <div id="modal">
         <div class="modalElement">

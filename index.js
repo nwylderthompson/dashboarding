@@ -1,5 +1,4 @@
 var token = "mobilegaming"
-var project_id = "566513"
 
 $(document).ready(function() {
 	reloadCharts();
@@ -269,6 +268,8 @@ function processChartData(chartType, data, title){
 			}
 		});
 	}
+	var steps  = Math.ceil(xAxis.categories.length/6)
+	xAxis.labels = {step:steps, staggerLines:1}
 	return [series, xAxis]
 }
 

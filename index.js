@@ -163,13 +163,17 @@ $(document).ready(function() {
 	})
 	$('#buildFunnel').click(function(){
 		var reportName = $("#funnelOptions option:selected").text();
-		var chartType = "funnel"
-		var params = {}
+		var chartType = "funnel";
+		var params = {};
 		params.funnel_id = $("#funnelOptions option:selected").val();
-		params.to_date = $("#toDate").val()
-		params.from_date = $("#fromDate").val()
-		params.interval = moment(params.to_date).diff(moment(params.from_date), 'days') + 1
-		funnelQueryBuild(chartType, reportName, params)
+		params.to_date = $("#toDate").val();
+		params.from_date = $("#fromDate").val();
+		params.interval = moment(params.to_date).diff(moment(params.from_date), 'days') + 1;
+		funnelQueryBuild(chartType, reportName, params);
+		$('#modal').toggle();
+		$('#overlay').toggle();
+		$('#funnelBuilder').toggle();
+		$('#saveDash').css({"background-color":"#3f516b", "cursor":"pointer"})
 	})
 });
 

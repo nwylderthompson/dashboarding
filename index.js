@@ -5,39 +5,37 @@ $(document).ready(function() {
 	initializeMixpanel()
 	$('#fromDatePicker').datepicker({
 	    onSelect: function(dateText, inst) {
-	      $("#fromDateText").text(returnDateText(dateText));
-	      $("#fromDate").val(moment(dateText).format("YYYY-MM-DD"));
-	      if ($("#fromDate").val() > $("#toDate").val()) {
-	      	if (moment($("#fromDate").val()).add(7, 'days') > moment()){
-	      		$("#toDateText").text(returnDateText(moment()));
-	      		$("#toDate").val(moment().format("YYYY-MM-DD"));
-	      		$("#toDatePicker").val(moment().format("MM/DD/YYYY"))
-	      	} else {
-	      		$("#toDateText").text(returnDateText(moment($("#fromDate").val()).add(7, 'days')));
-	      		$("#toDate").val(moment($("#fromDate").val()).add(7, 'days').format("YYYY-MM-DD"));
-	      		$("#toDatePicker").val(moment($("#fromDate").val()).add(7, 'days').format("MM/DD/YYYY"))
-	      	}	
-	      }
-	      $('#saveDash').css({"background-color":"#3f516b", "cursor":"pointer"});
-	      $("#dashboard").empty();
-	      reloadCharts($("#fromDate").val(), $("#toDate").val());
-    	},
-    	maxDate: "+0D"
+			$("#fromDateText").text(returnDateText(dateText));
+			$("#fromDate").val(moment(dateText).format("YYYY-MM-DD"));
+			if ($("#fromDate").val() > $("#toDate").val()) {
+				if (moment($("#fromDate").val()).add(7, 'days') > moment()){
+					$("#toDateText").text(returnDateText(moment()));
+					$("#toDate").val(moment().format("YYYY-MM-DD"));
+					$("#toDatePicker").val(moment().format("MM/DD/YYYY"))
+				} else {
+					$("#toDateText").text(returnDateText(moment($("#fromDate").val()).add(7, 'days')));
+					$("#toDate").val(moment($("#fromDate").val()).add(7, 'days').format("YYYY-MM-DD"));
+					$("#toDatePicker").val(moment($("#fromDate").val()).add(7, 'days').format("MM/DD/YYYY"))
+				}	
+			}
+			$('#saveDash').css({"background-color":"#3f516b", "cursor":"pointer"});
+			dateShift()
+			},
+			maxDate: "+0D"
     });
 	$('#toDatePicker').datepicker({
 	    onSelect: function(dateText, inst) {
-	      $('#toDateText').text(returnDateText(dateText));
-	      $("#toDate").val(moment(dateText).format("YYYY-MM-DD"));
-	      if ($("#fromDate").val() > $("#toDate").val()) {
-	      	$("#fromDateText").text(returnDateText(moment($("#toDate").val()).subtract(7, 'days')));
-	      	$("#fromDate").val(moment($("#toDate").val()).subtract(7, 'days').format("YYYY-MM-DD"));
-	      	$("#fromDatePicker").val(moment($("#toDate").val()).subtract(7, 'days').format("MM/DD/YYYY"))
-	      }
-	      $('#saveDash').css({"background-color":"#3f516b", "cursor":"pointer"});
-	      $("#dashboard").empty();
-	      reloadCharts($("#fromDate").val(), $("#toDate").val());
-    	},
-    	maxDate: "+0D"
+			$('#toDateText').text(returnDateText(dateText));
+			$("#toDate").val(moment(dateText).format("YYYY-MM-DD"));
+			if ($("#fromDate").val() > $("#toDate").val()) {
+				$("#fromDateText").text(returnDateText(moment($("#toDate").val()).subtract(7, 'days')));
+				$("#fromDate").val(moment($("#toDate").val()).subtract(7, 'days').format("YYYY-MM-DD"));
+				$("#fromDatePicker").val(moment($("#toDate").val()).subtract(7, 'days').format("MM/DD/YYYY"))
+			}
+			$('#saveDash').css({"background-color":"#3f516b", "cursor":"pointer"});
+			dateShift()
+			},
+			maxDate: "+0D"
 	});
 
 	$("#overlay").click(function(){
@@ -53,17 +51,7 @@ $(document).ready(function() {
 	$('#saveDash').click(
 		function(){
 			$(this).css({"background-color":"#647997", "cursor":"default"})
-			var dashboardData = {test:[]};
-			_.each($('#dashboard').children(), function(report){
-				var reportData = {};
-				reportData.query = JSON.parse(atob(report.dataset.report));
-				reportData.query.params.params.to_date = $("#toDate").val()
-				reportData.query.params.params.from_date = $("#fromDate").val()
-				reportData.position = $("#" + report.id).position()
-				reportData.dimensions = {height:$("#" + report.id).height(), width:$("#" + report.id).width()}
-				dashboardData.test.push(reportData);
-			});
-			Mixpanels.people_set(dashboardData, 'dashboardprofile')
+			saveDash()
 		}
 	);
 	$('.modalElement').click(function(){
@@ -160,8 +148,8 @@ $(document).ready(function() {
 		if ($("#propOptions").val() == "placeholder"){
 			propName = false;
 		}
-		if (!('to_date' in params) && chartType == 'column' && params.type == 'unique'){
-			params.interval = 7;
+		if (chartType == "column" && params.type == "unique"){
+			params.interval = moment(params.to_date).diff(moment(params.from_date), 'days')
 		}
 		segmentQueryBuild(chartType, reportName, eventName, propName, params, eventTitle);
 		$('#modal').toggle();
@@ -216,6 +204,7 @@ function loadChart(graphData){
 	$("#"+containerID).css(graphData.position);
 	$("#"+containerID).width(graphData.dimensions.width);
 	$("#"+containerID).height(graphData.dimensions.height);
+	var chartType = queryParams.chartType;
 	var eventName = queryParams.params.event;
 	var propName = queryParams.params.on;
 	//for bar chart labeling
@@ -227,7 +216,6 @@ function loadChart(graphData){
 	var params = queryParams.params.params
 	params.to_date = moment(params.to_date).format('YYYY-MM-DD')
 	params.from_date = moment(params.from_date).format('YYYY-MM-DD')
-	var chartType = queryParams.chartType;
 	var name = queryParams.name;
 	var graphID = "graph_" + new Date().getTime().toString();
 	var graphDiv = $('<div class="graph" id=' + graphID + '></div>').appendTo('#'+containerID);
@@ -336,34 +324,25 @@ function returnDateText(date) {
 	return result
 }
 
-function reloadCharts(from_date, to_date){
-	var to_date = to_date || false;
-	var from_date = from_date || false;
+function reloadCharts(){
 	get().done(function(data){
-		if (data.results.length > 0){
-			_.each(data.results[0].$properties, function(data, name){
-				if (name != "$last_seen" && name != "$predict_grade"){
-					_.each(data, function(graphData){
-						if (to_date){
-							graphData.query.params.params.to_date = $("#toDate").val()
-							graphData.query.params.params.from_date = $("#fromDate").val()
-						}
-						loadChart(graphData);
-						if (queryParams.params.params.to_date) {
-							$('#fromDateText').text(returnDateText(queryParams.params.params.from_date))
-							$('#fromDate').val(queryParams.params.params.from_date)
-							$('#toDateText').text(returnDateText(queryParams.params.params.to_date))
-							$('#toDate').val(queryParams.params.params.to_date)
-						} 					
-					})
-				}
-			})
-		} else {
-			$('#fromDateText').text(returnDateText(moment().subtract(7, 'days')))
-			$('#fromDate').val(moment().subtract(7, 'days').format('YYYY-MM-DD'))
-			$('#toDateText').text(returnDateText(moment()))
-			$('#toDate').val(moment().format('YYYY-MM-DD'))
-		}
+		$('#fromDateText').text(returnDateText(moment().subtract(7, 'days')))
+		$('#fromDate').val(moment().subtract(7, 'days').format('YYYY-MM-DD'))
+		$('#toDateText').text(returnDateText(moment()))
+		$('#toDate').val(moment().format('YYYY-MM-DD'))
+		_.each(data.results[0].$properties, function(data, name){
+			if (name != "$last_seen" && name != "$predict_grade"){
+				_.each(data, function(graphData){
+					loadChart(graphData);
+					if (queryParams.params.params.to_date) {
+						$('#fromDateText').text(returnDateText(queryParams.params.params.from_date))
+						$('#fromDate').val(queryParams.params.params.from_date)
+						$('#toDateText').text(returnDateText(queryParams.params.params.to_date))
+						$('#toDate').val(queryParams.params.params.to_date)
+					} 					
+				})
+			}
+		});
 	})
 }
 
@@ -378,4 +357,37 @@ function customEvent() {
 function getFunnels() {
 	var url = 'https://mixpanel.com/api/2.0/funnels/list/'
 	return MP.api.query(url, {})
+}
+function saveDash() {
+	var dashboardData = {test:[]};
+	_.each($('#dashboard').children(), function(report){
+		var reportData = {};
+		reportData.query = JSON.parse(atob(report.dataset.report));
+		reportData.query.params.params.to_date = $("#toDate").val()
+		reportData.query.params.params.from_date = $("#fromDate").val()
+		reportData.position = $("#" + report.id).position()
+		reportData.dimensions = {height:$("#" + report.id).height(), width:$("#" + report.id).width()}
+		dashboardData.test.push(reportData);
+	});
+	Mixpanels.people_set(dashboardData, 'dashboardprofile')
+}
+function dateShift() {
+	reports = []
+	_.each($('#dashboard').children(), function(report){
+		var reportData = {};
+		reportData.query = JSON.parse(atob(report.dataset.report));
+		if (reportData.query.params.params.interval){
+			reportData.query.params.params.interval = moment($("#toDate").val()).diff(moment($("#fromDate").val()), 'days')
+		}
+		console.log(reportData.query.params.params.interval)
+		reportData.query.params.params.to_date = $("#toDate").val()
+		reportData.query.params.params.from_date = $("#fromDate").val()
+		reportData.position = $("#" + report.id).position()
+		reportData.dimensions = {height:$("#" + report.id).height(), width:$("#" + report.id).width()}
+		reports.push(reportData)
+	});
+	$("#dashboard").empty();
+	_.each(reports, function(reportData){
+		loadChart(reportData)
+	})
 }

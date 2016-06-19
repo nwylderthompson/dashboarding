@@ -379,7 +379,6 @@ function dateShift() {
 		if (reportData.query.params.params.interval){
 			reportData.query.params.params.interval = moment($("#toDate").val()).diff(moment($("#fromDate").val()), 'days')
 		}
-		console.log(reportData.query.params.params.interval)
 		reportData.query.params.params.to_date = $("#toDate").val()
 		reportData.query.params.params.from_date = $("#fromDate").val()
 		reportData.position = $("#" + report.id).position()

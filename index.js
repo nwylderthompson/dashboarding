@@ -36,7 +36,6 @@ $(document).ready(function() {
 	      $('#saveDash').css({"background-color":"#3f516b", "cursor":"pointer"});
 	      $("#dashboard").empty();
 	      reloadCharts($("#fromDate").val(), $("#toDate").val());
-	      console.log($("#toDatePicker").val())
     	},
     	maxDate: "+0D"
 	});
@@ -81,13 +80,20 @@ $(document).ready(function() {
 			}
 			$('#eventOptions').prop('selectedIndex',0);
 			$('#propOptions').prop('selectedIndex',0);
-			MP.api.topEvents().done(function(data){
-				if ($('#eventOptions option').size() == 1){
+			if ($('#eventOptions option').size() == 1){
+				MP.api.topEvents().done(function(data){
 					_.each(data.values(), function(eventName, key){
-						$('<option>'+eventName+'</option>').appendTo('#eventOptions');
+						$('<option value="'+ eventName +'">'+eventName+'</option>').appendTo('#eventOptions');
 					});
-				}
-			});
+					customEvent().done(function(events){
+						_.each(events.custom_events, function(values){
+							var eventName = values.name
+							var eventValue = "$custom_event:" + values.id
+							$('<option value="'+ eventValue +'">'+eventName+'</option>').appendTo('#eventOptions');
+						})
+					})
+				});
+			}
 			$('#eventOptions').select2();
 		}
 		if ($(this).find(".modalDisplay").attr('id') == 'createRet'){
@@ -122,7 +128,7 @@ $(document).ready(function() {
 		}
 	})
 	$('#eventOptions').change(function(){
-		var eventName = $( "#eventOptions option:selected" ).text()
+		var eventName = $( "#eventOptions option:selected" ).val()
 		if ($(".segSelector").css("display") == "none") {
 			$('.segSelector').toggle();
 		}
@@ -146,7 +152,8 @@ $(document).ready(function() {
 		var params = {'type':$('.toggleBox-selected.queryType').attr('value')};
 		params.to_date = $("#toDate").val()
 		params.from_date = $("#fromDate").val()
-		var eventName = $( "#eventOptions option:selected" ).text();
+		var eventName = $( "#eventOptions option:selected" ).val();
+		var eventTitle = $( "#eventOptions option:selected" ).text();
 		var reportName = $('.textField').val();
 		var chartType = $('.toggleBox-selected.chartType').attr('value');
 		var propName = $( "#propOptions option:selected" ).text();
@@ -156,7 +163,7 @@ $(document).ready(function() {
 		if (!('to_date' in params) && chartType == 'column' && params.type == 'unique'){
 			params.interval = 7;
 		}
-		segmentQueryBuild(chartType, reportName, eventName, propName, params);
+		segmentQueryBuild(chartType, reportName, eventName, propName, params, eventTitle);
 		$('#modal').toggle();
 		$('#overlay').toggle();
 		$('.segSelector').toggle();
@@ -172,13 +179,13 @@ function initializeMixpanel(){
 	Mixpanels = new Mixpanel(token, MP.api.apiSecret)
 }
 
-function segmentQueryBuild(chartType, name, eventName, propName, params){
+function segmentQueryBuild(chartType, name, eventName, propName, params, eventTitle){
 	if (propName){
 		var title = propName;
 	} else {
-		var title = eventName;
+		var title = eventTitle;
 	}
-	var reportParams = {params:{event:eventName, on:propName, params:params}, chartType:chartType, name:name}
+	var reportParams = {params:{event:eventName, on:propName, params:params}, chartType:chartType, name:name, eventTitle:eventTitle}
 	Mixpanels.segment(eventName, propName, params).done(function(data){
 		Chart(name, data, chartType, reportParams, title);
 	});
@@ -211,10 +218,11 @@ function loadChart(graphData){
 	$("#"+containerID).height(graphData.dimensions.height);
 	var eventName = queryParams.params.event;
 	var propName = queryParams.params.on;
+	//for bar chart labeling
 	if (propName){
 		var title = propName;
 	} else {
-		var title = eventName;
+		var title = queryParams.eventTitle;
 	}
 	var params = queryParams.params.params
 	params.to_date = moment(params.to_date).format('YYYY-MM-DD')
@@ -246,10 +254,15 @@ function processChartData(chartType, data, title){
 			xAxis.categories.push(moment(value).format("MMM Do"))
 			dates.push(value)
 		});
-		_.each(data.data.values, function(values, segment){
+		var output = data.data.values
+		_.each(data.data.values, function(results, segment){
 			var current = {'name':segment, data:[]};
+			//for naming custom events
+			if (Object.keys(output).length == 1){
+				var current = {'name':title, data:[]};
+			}
 			_.each(dates, function(value, key){
-				current.data.push(values[value]);
+				current.data.push(results[value]);
 			});
 			x++
 			if (x < 13){
@@ -357,6 +370,11 @@ function reloadCharts(from_date, to_date){
 function get() {
         return MP.api.query('/api/2.0/engage', {'distinct_id': "dashboardprofile"})
       }
+
+function customEvent() {
+	return MP.api.query('/api/2.0/custom_events', {})
+}
+
 function getFunnels() {
 	var url = 'https://mixpanel.com/api/2.0/funnels/list/'
 	return MP.api.query(url, {})

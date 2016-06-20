@@ -1,8 +1,11 @@
 var token = "mobilegaming"
 
 $(document).ready(function() {
-	reloadCharts();
+	MP.api.segment("Game Played").done(function(data){
+		console.log(data.values())
+	})
 	initializeMixpanel()
+	reloadCharts();
 	$('#fromDatePicker').datepicker({
 	    onSelect: function(dateText, inst) {
 			$("#fromDateText").text(returnDateText(dateText));
@@ -176,8 +179,8 @@ function segmentQueryBuild(chartType, name, eventName, propName, params, eventTi
 		var title = eventTitle;
 	}
 	var reportParams = {params:{event:eventName, on:propName, params:params}, chartType:chartType, name:name, eventTitle:eventTitle}
-	Mixpanels.segment(eventName, propName, params).done(function(data){
-		chart(name, data, chartType, reportParams, title);
+	MP.api.segment(eventName, propName, params).done(function(data){
+		chart(name, data.values(), chartType, reportParams, title);
 	});
 }
 function funnelQueryBuild(chartType, name, params){
@@ -233,8 +236,8 @@ function loadChart(graphData){
 		} else {
 			var title = queryParams.eventTitle;
 		}
-		Mixpanels.segment(eventName, propName, params).done(function(data){
-			results = processChartData(chartType, data, title)
+		MP.api.segment(eventName, propName, params).done(function(data){
+			results = processChartData(chartType, data.values(), title)
 			var series = results[0];
 			var xAxis = results[1];
 			drawChart(xAxis, series, name, chartType, graphID, containerID);
@@ -251,24 +254,24 @@ function loadChart(graphData){
 
 function processChartData(chartType, data, segmentTitle){
 	var xAxis = {categories:[]};
-	var dates = []
 	var series = [];
 	var x = 0;
 	if (chartType == "line"){
-		_.each(data.data.series, function(value, key){
-			xAxis.categories.push(moment(value).format("MMM Do"))
-			dates.push(value)
-		});
-		var output = data.data.values
-		_.each(data.data.values, function(results, segment){
+		_.each(data, function(results, segment){
+			var dates = []
 			var current = {'name':segment, data:[]};
 			//for naming custom events
-			if (Object.keys(output).length == 1){
+			if (Object.keys(data).length == 1){
 				var current = {'name':segmentTitle, data:[]};
 			}
-			_.each(dates, function(value, key){
-				current.data.push(results[value]);
-			});
+			_.each(results, function(value, date){
+				dates.push(date);
+			})
+			dates.sort()
+			_.each(dates, function(date){
+				xAxis.categories.push(moment(date).format("MMM Do"))
+				current.data.push(results[date])
+			})
 			x++
 			if (x < 13){
 				series.push(current)
@@ -278,7 +281,7 @@ function processChartData(chartType, data, segmentTitle){
 		xAxis.labels = {step:steps, staggerLines:1}
 	} else if (chartType == "column"){
 		xAxis.categories.push(segmentTitle);
-		_.each(data.data.values, function(values, segment){
+		_.each(data, function(values, segment){
 			var current = {'name':segment, data:[]};
 			var series_sum = 0
 			_.each(values, function(value, date){

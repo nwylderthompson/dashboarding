@@ -130,7 +130,7 @@ body {
    position: fixed;
    top: 0;
    width: 100%;
-   z-index: 10;
+   z-index: 99;
    display:none;
 }
 .eventSelector {
@@ -283,11 +283,6 @@ body {
     top: 92px;
     height: 24px;
 }
-.bookmarksToggle{
-    top: 40px;
-    left: 103px;
-    position: relative;
-}
 #select2-eventOptions-container {
     color:#747d94;
     font-size: 14px;
@@ -321,25 +316,6 @@ body {
     height: 20px;
     top: 45px;
     left: 179px;
-}
-.bookmarks {
-    position: relative;
-    float: left;
-    background-color: #f6f7f9;
-    height: 34px;
-    width: 108px;
-    border: 1px solid #647997;
-    border-radius: 5px;
-    text-align: center;
-    font-size: 14px;
-    font-family: "Helvetica Neue", helvetica, sans-serif;
-    color: #747d94;
-    margin-left: 20px;
-}
-.bookmarksText {
-    position: relative;
-    top: 8px;
-    font-weight: bold;
 }
 .arrow-up {
   width: 0; 

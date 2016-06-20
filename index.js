@@ -57,9 +57,6 @@ $(document).ready(function() {
 	$('.modalElement').click(function(){
 		if ($(this).find(".modalDisplay").attr('id') == 'createSeg'){
 			$('#segBuilder').toggle();
-			if ($(".segSelector").css("display") != "none") {
-				$('.segSelector').toggle();
-			}
 			if ($('#bookmarksBuilder').css("display") != "none") {
 				$('#bookmarksBuilder').toggle();
 			}
@@ -146,7 +143,6 @@ $(document).ready(function() {
 		segmentQueryBuild(chartType, reportName, eventName, propName, params, eventTitle);
 		$('#modal').toggle();
 		$('#overlay').toggle();
-		$('.segSelector').toggle();
 		$('#segBuilder').toggle();
 		$('#eventOptions').prop('selectedIndex',0);
 		$('#propOptions').prop('selectedIndex',0);
@@ -338,7 +334,6 @@ function drawChart(xAxis, series, name, chartType, graphID, containerID){
 			cursor: "move",
 			obstacle: ".container",
 	    	preventCollision: true,
-	    	stack: "#" + containerID,
 	    	zIndex:20,
 	    	snapMode: "outter"
 	}).resizable({

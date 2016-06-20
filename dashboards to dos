@@ -1,8 +1,10 @@
-Query Funnel
-Build Funnel Chart
 Names for Dashboards (multiple dashboard support)
+Convert Mixpanel Default Events & Props
 Snap into place graphs ----- Eh
-Date Ranges support ---- DONE
+Build Funnel Chart ----- DONE
+Query Funnel ----- DONE
+Custom Event Support ----- DONE
+Date Ranges support ----- DONE
 Load saved ----- DONE
 Alert when saved ----- DONE
 Delete functionality ----- DONE

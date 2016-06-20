@@ -1,9 +1,6 @@
 var token = "mobilegaming"
 
 $(document).ready(function() {
-	MP.api.segment("Game Played").done(function(data){
-		console.log(data.values())
-	})
 	initializeMixpanel()
 	reloadCharts();
 	$('#fromDatePicker').datepicker({
@@ -83,6 +80,8 @@ $(document).ready(function() {
 						loadProperties()
 					})
 				});
+			} else {
+				loadProperties()
 			}
 			$('#eventOptions').select2();
 		}
@@ -256,8 +255,21 @@ function processChartData(chartType, data, segmentTitle){
 	var xAxis = {categories:[]};
 	var series = [];
 	var x = 0;
+	//finding top segments
+	if (chartType == "line" || chartType == "column") {
+		var topSegments = {}
+		_.each(data, function(results, segment) {
+			topSegments[segment] = 0
+			_.each(results, function(amount){
+				topSegments[segment] += amount
+			});
+		});
+	}
 	if (chartType == "line"){
 		_.each(data, function(results, segment){
+			segment = _.invert(topSegments)[_.max(topSegments)]
+			results = data[segment]
+			delete topSegments[segment]
 			var dates = []
 			var current = {'name':segment, data:[]};
 			//for naming custom events
@@ -281,10 +293,13 @@ function processChartData(chartType, data, segmentTitle){
 		xAxis.labels = {step:steps, staggerLines:1}
 	} else if (chartType == "column"){
 		xAxis.categories.push(segmentTitle);
-		_.each(data, function(values, segment){
+		_.each(data, function(results, segment){
+			segment = _.invert(topSegments)[_.max(topSegments)]
+			results = data[segment]
+			delete topSegments[segment]
 			var current = {'name':segment, data:[]};
 			var series_sum = 0
-			_.each(values, function(value, date){
+			_.each(results, function(value, date){
 				series_sum += value;
 			});
 			current.data.push(series_sum)

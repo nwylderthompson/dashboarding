@@ -66,7 +66,7 @@ $(document).ready(function() {
 			$('#eventOptions').prop('selectedIndex',0);
 			$('#propOptions').prop('selectedIndex',0);
 			if ($('#eventOptions option').size() == 1){
-				MP.api.topEvents().done(function(data){
+				MP.api.topEvents({limit:500}).done(function(data){
 					customEvent().done(function(events){
 						$('#eventOptions').find('option').remove().end()
 						_.each(data.values(), function(eventName, key){
